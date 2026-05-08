@@ -81,7 +81,7 @@
             opacity: 0;
             pointer-events: none;
             transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            transform: scale(0.9) translateY(30px); /* Smooth pop-up effect */
+            transform: scale(0.9) translateY(30px);
         }
 
         .slide.active {
@@ -103,14 +103,13 @@
             text-shadow: 2px 2px 4px rgba(255,255,255,0.8);
         }
 
-        .subtitle { color: #555; font-size: 13px; margin: 5px 0 25px 0; font-weight: 600; }
+        .subtitle { color: #555; font-size: 13px; margin: 5px 0 20px 0; font-weight: 600; }
 
-        /* 📸 ONE LARGE PHOTO PER SCREEN */
+        /* 📸 ONE LARGE PHOTO PER SCREEN - FIXED ASPECT RATIO */
         .single-polaroid {
-            width: 85%;
-            max-width: 320px;
-            height: 50vh; /* Badi photo! */
-            max-height: 400px;
+            width: 80%;
+            max-width: 280px;
+            aspect-ratio: 3 / 4; 
             perspective: 1000px; 
             cursor: pointer;
             margin-bottom: 25px;
@@ -120,19 +119,19 @@
         .single-polaroid.flipped .flip-card-inner { transform: rotateY(180deg); }
         .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); box-sizing: border-box; }
         
-        .flip-card-front { background: #fff; padding: 12px 12px 45px 12px; transform: rotate(calc(var(--r))); }
+        .flip-card-front { background: #fff; padding: 12px 12px 50px 12px; transform: rotate(calc(var(--r))); }
         .flip-card-front::before { content: ''; position: absolute; top: -10px; left: 50%; width: 50px; height: 18px; background: rgba(255, 255, 255, 0.8); transform: translateX(-50%) rotate(-3deg); box-shadow: 0 1px 4px rgba(0,0,0,0.15); z-index: 2; }
         
-        /* 🔥 FIX: 'contain' lagaya taaki bina kate photo poori dikhe */
         .flip-card-front img { 
             width: 100%; 
-            height: calc(100% - 2px); 
-            object-fit: contain; /* KABHI NAHI KATEGI PHOTO */
+            height: 100%; 
+            object-fit: cover; 
+            object-position: center top; 
             border-radius: 8px; 
-            background-color: #fafafa;
         }
         
-        .polaroid-text { font-family: 'Dancing Script', cursive; position: absolute; bottom: 8px; left: 0; width: 100%; text-align: center; font-size: 24px; color: #ff4757; font-weight: 700; }
+        /* Chote aur cute captions ke liye size theek kiya */
+        .polaroid-text { font-family: 'Dancing Script', cursive; position: absolute; bottom: 12px; left: 0; width: 100%; text-align: center; font-size: 22px; color: #ff4757; font-weight: 700; }
         
         .flip-card-back { background: linear-gradient(135deg, #fff 0%, #ffe6ea 100%); color: #ff4757; transform: rotateY(180deg) rotate(calc(var(--r) * -1)); display: flex; align-items: center; justify-content: center; padding: 25px; font-size: 18px; line-height: 1.5; font-weight: 600; text-align: center; border: 3px solid #ffb8c6; }
 
@@ -223,8 +222,11 @@
             
             <div class="single-polaroid" onclick="flipPhoto(this)">
                 <div class="flip-card-inner">
-                    <div class="flip-card-front" style="--r: -3deg;"><img src="img-01.jpg"><div class="polaroid-text">Uff! 🔥</div></div>
-                    <div class="flip-card-back" style="--r: -3deg;">Jab tu aise dekhta hai na, toh kasam se dil dhadakna bhool jata hai! ❤️</div>
+                    <div class="flip-card-front" style="--r: -3deg;">
+                        <img src="img-01.jpg">
+                        <div class="polaroid-text">Oyy maar dalegi kya? 🙈</div>
+                    </div>
+                    <div class="flip-card-back" style="--r: -3deg;">Jab tu aise dekhti hai na, toh kasam se nazar hatane ka mann nahi karta! ❤️</div>
                 </div>
             </div>
             <button class="next-btn" onclick="nextSlide(1)">Aage Dekh! ➡️</button>
@@ -237,8 +239,11 @@
             
             <div class="single-polaroid" onclick="flipPhoto(this)">
                 <div class="flip-card-inner">
-                    <div class="flip-card-front" style="--r: 4deg;"><img src="img-02.jpg"><div class="polaroid-text">My Hero 😎</div></div>
-                    <div class="flip-card-back" style="--r: 4deg;">Teri ek smile aur main pighal jati hoon... Garmi badh rahi hai! 🥵✨</div>
+                    <div class="flip-card-front" style="--r: 4deg;">
+                        <img src="img-02.jpg">
+                        <div class="polaroid-text">Mast lag rahi hai! 😍</div>
+                    </div>
+                    <div class="flip-card-back" style="--r: 4deg;">Teri smile dekh kar hi toh mere din ki shuruat hoti hai! ✨</div>
                 </div>
             </div>
             <button class="next-btn" onclick="nextSlide(2)">Aur Dekh! ➡️</button>
@@ -251,8 +256,11 @@
             
             <div class="single-polaroid" onclick="flipPhoto(this)">
                 <div class="flip-card-inner">
-                    <div class="flip-card-front" style="--r: -2deg;"><img src="img-03.jpg"><div class="polaroid-text">Handsome Boy 💕</div></div>
-                    <div class="flip-card-back" style="--r: -2deg;">Itna cute ban ke ghoomega toh mujhe darr lagta hai koi chura na le! 🫣💖</div>
+                    <div class="flip-card-front" style="--r: -2deg;">
+                        <img src="img-03.jpg">
+                        <div class="polaroid-text">Nazar na lage tujhe 🧿</div>
+                    </div>
+                    <div class="flip-card-back" style="--r: -2deg;">Itni cute ban ke ghoomegi toh mujhe darr lagta hai koi chura na le! 🫣💖</div>
                 </div>
             </div>
             <button class="next-btn" onclick="nextSlide(3)">Last Wali! ➡️</button>
@@ -265,8 +273,11 @@
             
             <div class="single-polaroid" onclick="flipPhoto(this)">
                 <div class="flip-card-inner">
-                    <div class="flip-card-front" style="--r: 3deg;"><img src="img-04.jpg"><div class="polaroid-text">Only Mine 💋</div></div>
-                    <div class="flip-card-back" style="--r: 3deg;">Sun, tu sirf mera hai. Koi aur dekhe toh main uski aankhein nikal loon! 😌🔪</div>
+                    <div class="flip-card-front" style="--r: 3deg;">
+                        <img src="img-04.jpg">
+                        <div class="polaroid-text">Uff teri ye adaa! 🔥</div>
+                    </div>
+                    <div class="flip-card-back" style="--r: 3deg;">Sun, tu sirf meri hai. Koi aur dekhe toh main uski aankhein nikal loon! 😌🔪</div>
                 </div>
             </div>
             <button class="next-btn" onclick="nextSlide(4)">Ek Baat Kahu? 👀➡️</button>
