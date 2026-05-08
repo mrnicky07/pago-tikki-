@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Surprise for Paglo! 💖</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Poppins:wght@400;600&display=swap');
+
+        body {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);
+            background-attachment: fixed;
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            touch-action: manipulation;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.45);
+            box-shadow: 0 8px 32px 0 rgba(255, 154, 158, 0.3);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 25px;
+            border: 2px solid rgba(255, 255, 255, 0.6);
+        }
+
+        /* 💌 Digital Envelope Screen */
+        #startScreen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(15px);
+            transition: opacity 1s ease;
+        }
+
+        .envelope-wrapper {
+            position: relative;
+            cursor: pointer;
+            animation: bounce 2s infinite;
+        }
+
+        .envelope {
+            width: 250px;
+            height: 160px;
+            background: #ff758c;
+            border-radius: 0 0 10px 10px;
+            position: relative;
+            box-shadow: 0 15px 30px rgba(255, 117, 140, 0.4);
+        }
+
+        .envelope::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            border-top: 80px solid transparent;
+            border-left: 125px solid #ff4757;
+            border-bottom: 80px solid #ff4757;
+            border-right: 125px solid transparent;
+            border-radius: 0 0 0 10px;
+            z-index: 3;
+        }
+
+        .envelope::after {
+            content: '';
+            position: absolute;
+            top: 0; right: 0;
+            border-top: 80px solid transparent;
+            border-right: 125px solid #ff6b81;
+            border-bottom: 80px solid #ff6b81;
+            border-left: 125px solid transparent;
+            border-radius: 0 0 10px 0;
+            z-index: 2;
+        }
+
+        .flap {
+            position: absolute;
+            top: 0; left: 0;
+            width: 0; height: 0;
+            border-top: 90px solid #ff7eb3;
+            border-left: 125px solid transparent;
+            border-right: 125px solid transparent;
+            z-index: 4;
+            transform-origin: top;
+            transition: transform 0.6s ease;
+        }
+
+        .heart-seal {
+            position: absolute;
+            top: 75px; left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 40px;
+            z-index: 5;
+            transition: opacity 0.3s ease;
+        }
+
+        .letter-inside {
+            position: absolute;
+            background: white;
+            width: 220px;
+            height: 140px;
+            top: 10px; left: 15px;
+            border-radius: 10px;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Dancing Script', cursive;
+            font-size: 24px;
+            color: #ff4757;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.8s ease;
+        }
+
+        .envelope-wrapper.open .flap { transform: rotateX(180deg); z-index: 1; }
+        .envelope-wrapper.open .heart-seal { opacity: 0; }
+        .envelope-wrapper.open .letter-inside { transform: translateY(-80px); z-index: 2; }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+            40% {transform: translateY(-20px);}
+            60% {transform: translateY(-10px);}
+        }
+
+        /* Main Content */
+        #mainContent {
+            display: none;
+            padding: 20px 15px;
+            width: 100%;
+            box-sizing: border-box;
+            max-width: 500px;
+            text-align: center;
+            z-index: 10;
+        }
+
+        h1 {
+            font-family: 'Dancing Script', cursive;
+            color: #ff4757;
+            font-size: clamp(40px, 9vw, 55px);
+            margin-bottom: 5px;
+            text-shadow: 2px 2px 4px rgba(255,255,255,0.8);
+        }
+
+        .subtitle {
+            color: #555;
+            font-size: 14px;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+
+        /* 🔄 3D Flip Photos Gallery */
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            justify-items: center;
+            margin-bottom: 30px;
+            padding: 0 5px;
+        }
+
+        .flip-card {
+            background: transparent;
+            width: 100%;
+            max-width: 140px;
+            height: 190px;
+            perspective: 1000px; 
+            cursor: pointer;
+        }
+
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+
+        .flip-card.flipped .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 8px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            box-sizing: border-box;
+        }
+
+        .flip-card-front {
+            background: #fff;
+            padding: 8px 8px 30px 8px;
+            transform: rotate(calc(var(--r)));
+        }
+
+        .flip-card-front::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            width: 45px;
+            height: 15px;
+            background: rgba(255, 255, 255, 0.7);
+            transform: translateX(-50%) rotate(-3deg);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            z-index: 2;
+        }
+
+        .flip-card-front img {
+            width: 100%;
+            height: 130px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .polaroid-text {
+            font-family: 'Dancing Script', cursive;
+            position: absolute;
+            bottom: 5px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 18px;
+            color: #ff4757;
+            font-weight: 700;
+        }
+
+        .flip-card-back {
+            background: linear-gradient(135deg, #fff 0%, #ffe6ea 100%);
+            color: #ff4757;
+            transform: rotateY(180deg) rotate(calc(var(--r) * -1));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            font-size: 14px;
+            font-weight: 600;
+            text-align: center;
+            border: 2px solid #ffb8c6;
+        }
+
+        /* Question Box */
+        .question-box {
+            padding: 20px 15px;
+            margin: 0 auto;
+            max-width: 350px;
+            position: relative;
+            min-height: 180px;
+        }
+        
+        .question-box h2 { 
+            color: #2f3542; 
+            font-size: clamp(18px, 5vw, 22px);
+            margin-top: 0;
+        }
+
+        #typewriterText {
+            color: #ff4757; 
+            font-size: 22px;
+            font-weight: 600;
+            min-height: 35px;
+            border-right: 3px solid #ff4757;
+            white-space: nowrap;
+            overflow: hidden;
+            display: inline-block;
+            margin: 0 auto;
+            animation: blink 0.75s step-end infinite;
+        }
+
+        @keyframes blink { 50% { border-color: transparent; } }
+
+        /* ☑️ Promise Checkbox */
+        .checkbox-container {
+            display: block;
+            position: relative;
+            padding-left: 30px;
+            margin-top: 15px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            color: #555;
+            text-align: left;
+            user-select: none;
+            opacity: 0; 
+            transition: opacity 0.5s ease;
+        }
+
+        .checkbox-container input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+            height: 0;
+            width: 0;
+        }
+
+        .checkmark {
+            position: absolute;
+            top: 0; left: 0;
+            height: 20px; width: 20px;
+            background-color: #eee;
+            border-radius: 5px;
+            border: 2px solid #ff758c;
+        }
+
+        .checkbox-container input:checked ~ .checkmark {
+            background-color: #ff4757;
+        }
+
+        .checkmark:after {
+            content: "";
+            position: absolute;
+            display: none;
+            left: 6px; top: 2px;
+            width: 5px; height: 10px;
+            border: solid white;
+            border-width: 0 3px 3px 0;
+            transform: rotate(45deg);
+        }
+
+        .checkbox-container input:checked ~ .checkmark:after {
+            display: block;
+        }
+
+        /* Buttons */
+        .btn-group {
+            position: relative;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-top: 20px;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        
+        .action-btn {
+            font-family: 'Poppins', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+        }
+        
+        #yesBtn {
+            background: linear-gradient(135deg, #ff758c 0%, #ff7eb3 100%);
+            color: white;
+            z-index: 2;
+            box-shadow: 0 5px 15px rgba(255, 117, 140, 0.4);
+            transition: transform 0.2s;
+        }
+        
+        #noBtn {
+            background-color: white;
+            color: #ff4757;
+            position: absolute;
+            z-index: 50;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+            transition: left 0.3s ease, top 0.3s ease;
+        }
+
+        /* 🐱🔫 Cat Threat Box */
+        #catThreat {
+            position: fixed;
+            bottom: -150px; 
+            right: 20px;
+            background: white;
+            padding: 15px 20px;
+            border-radius: 20px 20px 0 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: bottom 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 3px solid #ff4757;
+        }
+
+        #catThreat.show { bottom: 20px; }
+
+        .cat-emoji { font-size: 35px; }
+        .threat-text { color: #ff4757; font-weight: 700; font-size: 16px; }
+
+        /* 😘 Kiss Popup Animation */
+        #kissPopup {
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            font-size: 120px;
+            z-index: 3000;
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        .kiss-animate { animation: kissPop 1.5s forwards; }
+
+        @keyframes kissPop {
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+            50% { transform: translate(-50%, -50%) scale(1.5); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(2.5); opacity: 0; }
+        }
+
+        /* Success Screen */
+        #successContainer {
+            display: none;
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 35px 20px;
+            width: 85%;
+            max-width: 350px;
+            z-index: 500;
+            text-align: center;
+        }
+
+        .celebration-emojis {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+        .dancing-boy { font-size: 60px; animation: danceMove 0.8s infinite alternate ease-in-out; }
+        .jumping-boy { font-size: 60px; animation: jumpMove 0.5s infinite alternate ease-in-out; }
+
+        @keyframes danceMove { 100% { transform: translateY(-15px) rotate(15deg) scale(1.1); } }
+        @keyframes jumpMove { 100% { transform: translateY(-35px) scale(1.1); } }
+
+        /* Floating Particles */
+        .trail-particle {
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 3px rgba(255, 71, 87, 0.5);
+            animation: floatAndFade 2s linear forwards;
+        }
+        @keyframes floatAndFade {
+            0% { opacity: 1; transform: translateY(0) scale(1); }
+            100% { opacity: 0; transform: translateY(-60px) scale(1.2); }
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Audio Elements -->
+    <audio id="bgMusic" loop><source src="gana.mp3" type="audio/mpeg"></audio>
+    <audio id="popSound"><source src="pop.mp3" type="audio/mpeg"></audio>
+    <audio id="kissSound"><source src="kiss.aac" type="audio/mpeg"></audio>
+
+    <!-- Start Screen -->
+    <div id="startScreen">
+        <h2 style="color: #ff4757; margin-bottom: 40px;">Tap the Letter! 💌</h2>
+        <div class="envelope-wrapper" id="envelopeBtn">
+            <div class="envelope">
+                <div class="flap"></div>
+                <div class="heart-seal">💖</div>
+                <div class="letter-inside">For Paglo! ✨</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div id="mainContent">
+        <h1>My Cute Paglo 😎</h1>
+        <p class="subtitle">(Touch the photos to flip them! 🔄✨)</p>
+
+        <!-- 3D Flip Gallery with Sound Trigger -->
+        <div class="gallery">
+            <div class="flip-card" onclick="flipPhoto(this)">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front" style="--r: -4deg;"><img src="img-01.jpg"><div class="polaroid-text">Vibe</div></div>
+                    <div class="flip-card-back" style="--r: -4deg;">Tu itni cute ban ke ghoomti hai, kisi din sach mein kidnap kar lunga! 🫣❤️</div>
+                </div>
+            </div>
+            <div class="flip-card" onclick="flipPhoto(this)">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front" style="--r: 5deg;"><img src="img-02.jpg"><div class="polaroid-text">Cute</div></div>
+                    <div class="flip-card-back" style="--r: 5deg;">Teri smile dekh kar hi toh mera poora din ban jata hai! ✨</div>
+                </div>
+            </div>
+            <div class="flip-card" onclick="flipPhoto(this)">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front" style="--r: -3deg;"><img src="img-03.jpg"><div class="polaroid-text">Hot</div></div>
+                    <div class="flip-card-back" style="--r: -3deg;">Ek toh tu hot, upar se meri bestie... Kya kismat hai meri! 🔥</div>
+                </div>
+            </div>
+            <div class="flip-card" onclick="flipPhoto(this)">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front" style="--r: 6deg;"><img src="img-04.jpg"><div class="polaroid-text">Slay</div></div>
+                    <div class="flip-card-back" style="--r: 6deg;">Meri life ka sabse khoobsurat hissa tu hi toh hai, Paglo! 💖</div>
+                </div>
+            </div>
+            <div class="flip-card" onclick="flipPhoto(this)">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front" style="--r: -5deg;"><img src="img-05.jpg"><div class="polaroid-text">Nautanki</div></div>
+                    <div class="flip-card-back" style="--r: -5deg;">Aise hi hasti raha kar, mere dimaag ki batti jal jati hai! 😉</div>
+                </div>
+            </div>
+            <div class="flip-card" onclick="flipPhoto(this)">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front" style="--r: 3deg;"><img src="img-06.jpg"><div class="polaroid-text">Mine!</div></div>
+                    <div class="flip-card-back" style="--r: 3deg;">Tere nakhre uthane mein jo maza hai, wo kisi aur cheez mein kahan! 😌</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Question Box -->
+        <div class="question-box glass">
+            <h2>Bohot din ho gaye yaar... 👀</h2>
+            <span id="typewriterText"></span>
+            
+            <label class="checkbox-container" id="promiseBox">
+                <input type="checkbox" id="promiseCheck">
+                <span class="checkmark"></span>
+                I promise aaj main thoda kam nakhre karungi! 🥺🤞
+            </label>
+
+            <div class="btn-group" id="btnGroup">
+                <button id="yesBtn" class="action-btn">Abhi chalo! 😍</button>
+                <button id="noBtn" class="action-btn" style="left: 60%;">Nahi 😒</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Threat & Popups -->
+    <div id="catThreat"><div class="threat-text" id="threatText">Soch le ache se!</div><div class="cat-emoji">🐱🔫</div></div>
+    <div id="kissPopup">😘</div>
+
+    <!-- Success Screen -->
+    <div id="successContainer" class="glass">
+        <div class="celebration-emojis"><div class="jumping-boy">🤸‍♂️</div><div class="dancing-boy">🕺</div></div>
+        <h1 style="font-size: 40px; margin-bottom: 0;">Yayyy! 🎉</h1>
+        <p style="font-size: 18px; font-weight: 600; color: #333;">Done hai phir! 🤝</p>
+        <h2 style="color: #ff4757;">Jaldi se ready ho ja! 👗</h2>
+        <p style="color: #555; font-size: 14px;">Tikki toh bahana hai, mujhe toh bas tujhe dekhna tha! 😉 Aaja jaldi!</p>
+    </div>
+
+    <script>
+        // Audio Logic
+        const popSound = document.getElementById('popSound');
+        const kissSound = document.getElementById('kissSound');
+        
+        function flipPhoto(cardElement) {
+            cardElement.classList.toggle('flipped');
+            // Play Pop Sound
+            popSound.currentTime = 0; 
+            popSound.play().catch(e => console.log("Sound error"));
+        }
+
+        // Envelope Logic
+        const envelopeBtn = document.getElementById('envelopeBtn');
+        const startScreen = document.getElementById('startScreen');
+        const mainContent = document.getElementById('mainContent');
+        const bgMusic = document.getElementById('bgMusic');
+        
+        envelopeBtn.addEventListener('click', () => {
+            envelopeBtn.classList.add('open');
+            bgMusic.play().catch(e => console.log("Audio skipped"));
+
+            setTimeout(() => {
+                startScreen.style.opacity = '0';
+                setTimeout(() => {
+                    startScreen.style.display = 'none';
+                    mainContent.style.display = 'block';
+                    setTimeout(startTypewriter, 500);
+                }, 500);
+            }, 1200);
+        });
+
+        // Typewriter Effect
+        const textToType = "Tikki pine chalo na 🥔🥤";
+        const typewriterEl = document.getElementById('typewriterText');
+        const btnGroup = document.getElementById('btnGroup');
+        const promiseBox = document.getElementById('promiseBox');
+        let typeIndex = 0;
+
+        function startTypewriter() {
+            if (typeIndex < textToType.length) {
+                typewriterEl.innerHTML += textToType.charAt(typeIndex);
+                typeIndex++;
+                setTimeout(startTypewriter, 100);
+            } else {
+                typewriterEl.style.borderRight = "none";
+                promiseBox.style.opacity = '1';
+                setTimeout(() => { btnGroup.style.opacity = '1'; }, 300);
+            }
+        }
+
+        // Magic Trail
+        function createTrail(e) {
+            const particle = document.createElement('div');
+            const items = ['✨', '💖', 'My Constant', 'Drama Queen', 'Fav Person', 'Nautanki', '✨', '💫'];
+            particle.innerText = items[Math.floor(Math.random() * items.length)];
+            particle.className = 'trail-particle';
+            particle.style.fontSize = particle.innerText.length > 2 ? '14px' : '20px';
+
+            let x = e.touches ? e.touches[0].clientX : e.clientX;
+            let y = e.touches ? e.touches[0].clientY : e.clientY;
+            particle.style.left = (x - 20 + (Math.random() * 40)) + 'px';
+            particle.style.top = (y - 20 + (Math.random() * 40)) + 'px';
+            document.body.appendChild(particle);
+            setTimeout(() => particle.remove(), 2000);
+        }
+        
+        setInterval(() => {
+            if(mainContent.style.display === 'block') {
+                createTrail({ clientX: Math.random() * window.innerWidth, clientY: window.innerHeight });
+            }
+        }, 1500);
+
+        document.addEventListener('touchmove', createTrail, {passive: true});
+        document.addEventListener('mousemove', createTrail);
+
+        // Cat Threat Logic
+        const noBtn = document.getElementById('noBtn');
+        const catThreat = document.getElementById('catThreat');
+        const threatText = document.getElementById('threatText');
+        const threats = ["Soch le ache se! 😡", "Goli maar dunga! 🔪", "Aakhiri mauka hai! ☠️", "Maan ja chup chaap! 😤"];
+        let threatTimer;
+
+        function moveButton(e) {
+            e.preventDefault(); 
+            const safePadding = 15;
+            const maxX = window.innerWidth - noBtn.offsetWidth - safePadding;
+            const maxY = window.innerHeight - noBtn.offsetHeight - safePadding;
+            const randomX = Math.max(safePadding, Math.floor(Math.random() * maxX));
+            const randomY = Math.max(safePadding, Math.floor(Math.random() * maxY));
+            noBtn.style.position = 'fixed';
+            noBtn.style.left = randomX + 'px';
+            noBtn.style.top = randomY + 'px';
+
+            threatText.innerText = threats[Math.floor(Math.random() * threats.length)];
+            catThreat.classList.add('show');
+            clearTimeout(threatTimer);
+            threatTimer = setTimeout(() => { catThreat.classList.remove('show'); }, 2000); 
+        }
+
+        noBtn.addEventListener('mouseover', moveButton);
+        noBtn.addEventListener('touchstart', moveButton, {passive: false});
+
+        // Yes Button, Checkbox Validation & Kiss Animation
+        const yesBtn = document.getElementById('yesBtn');
+        const promiseCheck = document.getElementById('promiseCheck');
+        const kissPopup = document.getElementById('kissPopup');
+        const successContainer = document.getElementById('successContainer');
+
+        yesBtn.addEventListener('click', () => {
+            if(!promiseCheck.checked) {
+                alert("Oye! Pehle Promise wale box par tick kar! 😤");
+                promiseBox.style.transform = "translateX(-10px)";
+                setTimeout(()=> promiseBox.style.transform = "translateX(10px)", 100);
+                setTimeout(()=> promiseBox.style.transform = "translateX(0)", 200);
+                return;
+            }
+
+            mainContent.style.filter = 'blur(10px)';
+            
+            // Play Kiss Sound & Animate
+            kissSound.currentTime = 0;
+            kissSound.play().catch(e => console.log("Sound error"));
+            kissPopup.classList.add('kiss-animate');
+            
+            setTimeout(() => {
+                successContainer.style.display = 'block';
+                createCelebrationRain();
+            }, 1200);
+        });
+
+        function createCelebrationRain() {
+            for(let i = 0; i < 35; i++) {
+                setTimeout(() => {
+                    const drop = document.createElement('div');
+                    const items = ['🥔', '🎉', '🥤', '✨', '💖', '🕺', '🤸‍♂️', '💋'];
+                    drop.innerText = items[Math.floor(Math.random() * items.length)];
+                    drop.style.position = 'fixed';
+                    drop.style.top = '-50px';
+                    drop.style.left = Math.random() * 100 + 'vw';
+                    drop.style.fontSize = (Math.random() * 20 + 20) + 'px';
+                    drop.style.zIndex = '1000';
+                    drop.style.transition = 'top 3s ease-in, transform 3s linear';
+                    document.body.appendChild(drop);
+
+                    setTimeout(() => {
+                        drop.style.top = '120vh';
+                        drop.style.transform = `rotate(${Math.random() * 360}deg)`;
+                    }, 50);
+
+                    setTimeout(() => drop.remove(), 3000);
+                }, i * 60);
+            }
+        }
+    </script>
+</body>
+</html>
